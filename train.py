@@ -12,32 +12,23 @@ import datetime
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", type=str, default="data/UCF-101-frames", help="Path to UCF-101 dataset")
-    parser.add_argument("--split_path", type=str, default="data/ucfTrainTestlist", help="Path to train/test split")
-    parser.add_argument("--split_number", type=int, default=1, help="train/test split number. One of {1, 2, 3}")
-    parser.add_argument("--num_epochs", type=int, default=100, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=16, help="Size of each training batch")
-    parser.add_argument("--sequence_length", type=int, default=40, help="Number of frames in each sequence")
-    parser.add_argument("--img_dim", type=int, default=224, help="Height / width dimension")
-    parser.add_argument("--channels", type=int, default=3, help="Number of image channels")
+    parser.add_argument("--dataset_path", type=str, default='/home/datasets/KineticsImgTest/dataset', help="Path to dataset")
+    parser.add_argument('--saved_model_path', type=str, default='/home/datasets/KineticsImgTest/results')
+    parser.add_argument("--num_epochs", type=int, default=50, help="Number of training epochs")
+    parser.add_argument("--batch_size", type=int, default=64, help="Size of each training batch")
+    parser.add_argument("--sequence_length", type=int, default=1, help="Number of frames in each sequence")
     parser.add_argument("--latent_dim", type=int, default=512, help="Dimensionality of the latent representation")
+    parser.add_argument('--num_train_threshold', type=int, default=10)
+    parser.add_argument("--checkpoint_interval", type=int, default=5, help="Interval between saving model checkpoints")
     parser.add_argument("--checkpoint_model", type=str, default="", help="Optional path to checkpoint model")
-    parser.add_argument(
-        "--checkpoint_interval", type=int, default=5, help="Interval between saving model checkpoints"
-    )
     opt = parser.parse_args()
     print(opt)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    image_shape = (opt.channels, opt.img_dim, opt.img_dim)
-
     # Define training set
     train_dataset = Dataset(
         dataset_path=opt.dataset_path,
-        split_path=opt.split_path,
-        split_number=opt.split_number,
-        input_shape=image_shape,
         sequence_length=opt.sequence_length,
         training=True,
     )
@@ -46,9 +37,6 @@ if __name__ == "__main__":
     # Define test set
     test_dataset = Dataset(
         dataset_path=opt.dataset_path,
-        split_path=opt.split_path,
-        split_number=opt.split_number,
-        input_shape=image_shape,
         sequence_length=opt.sequence_length,
         training=False,
     )
@@ -107,8 +95,12 @@ if __name__ == "__main__":
             )
         model.train()
         print("")
+        return acc
 
+    #training procedure
     for epoch in range(opt.num_epochs):
+        best_accuracy = 0
+        keep_training_value = 0
         epoch_metrics = {"loss": [], "acc": []}
         prev_time = time.time()
         print(f"--- Epoch {epoch} ---")
@@ -166,9 +158,19 @@ if __name__ == "__main__":
                 torch.cuda.empty_cache()
 
         # Evaluate the model on the test set
-        test_model(epoch)
+        validation_accuracy = test_model(epoch)
 
         # Save model checkpoint
         if epoch % opt.checkpoint_interval == 0:
-            os.makedirs("model_checkpoints", exist_ok=True)
+            os.makedirs(os.path.join(opt.saved_model_path, "model_checkpoints"), exist_ok=True)
             torch.save(model.state_dict(), f"model_checkpoints/{model.__class__.__name__}_{epoch}.pth")
+
+        if validation_accuracy < best_accuracy:
+            keep_training_value += 1
+            print("Accuracy has gotten worse... best result was {} epochs ago".format(str(keep_training_value)))
+            if keep_training_value >= opt.num_train_threshold:
+                print("Interrupting training at epoch {} for lack of improvements".format(str(epoch)))
+                break
+        else:
+            keep_training_value = 0
+            print("Accuracy is better than last epoch.")

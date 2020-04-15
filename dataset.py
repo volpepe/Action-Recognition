@@ -14,45 +14,34 @@ std = np.array([0.229, 0.224, 0.225])
 
 
 class Dataset(Dataset):
-    def __init__(self, dataset_path, split_path, split_number, input_shape, sequence_length, training):
+    def __init__(self, dataset_path, sequence_length, training):
         self.training = training
-        self.label_index = self._extract_label_mapping(split_path)
-        self.sequences = self._extract_sequence_paths(dataset_path, split_path, split_number, training)
+        self.label_index = self._extract_label_mapping(dataset_path)
+        self.sequences = self._extract_sequence_paths(dataset_path, training)
         self.sequence_length = sequence_length
         self.label_names = sorted(list(set([self._activity_from_path(seq_path) for seq_path in self.sequences])))
         self.num_classes = len(self.label_names)
-        self.transform = transforms.Compose(
-            [
-                transforms.Resize(input_shape[-2:], Image.BICUBIC),
-                transforms.ToTensor(),
-                transforms.Normalize(mean, std),
-            ]
-        )
+        self.transform = transforms.Compose([
+            transforms.Resize(299),
+            transforms.CenterCrop(299),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std),
+        ]) if not training else transforms.Compose([
+            transforms.RandomResizedCrop(299),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std),
+        ])
+        assert self.num_classes == 400, "Not all classes were detected."
 
-    def _extract_label_mapping(self, split_path="data/ucfTrainTestlist"):
+    def _extract_label_mapping(self, dataset_path):
         """ Extracts a mapping between activity name and softmax index """
-        with open(os.path.join(split_path, "classInd.txt")) as file:
-            lines = file.read().splitlines()
-        label_mapping = {}
-        for line in lines:
-            label, action = line.split()
-            label_mapping[action] = int(label) - 1
-        return label_mapping
+        return {label: action for label, action in enumerate(sorted(list(set(os.listdir(
+                os.path.join(dataset_path, "val_mult"))))))}
 
-    def _extract_sequence_paths(
-        self, dataset_path, split_path="data/ucfTrainTestlist", split_number=1, training=True
-    ):
-        """ Extracts paths to sequences given the specified train / test split """
-        assert split_number in [1, 2, 3], "Split number has to be one of {1, 2, 3}"
-        fn = f"trainlist0{split_number}.txt" if training else f"testlist0{split_number}.txt"
-        split_path = os.path.join(split_path, fn)
-        with open(split_path) as file:
-            lines = file.read().splitlines()
-        sequence_paths = []
-        for line in lines:
-            seq_name = line.split(".avi")[0]
-            sequence_paths += [os.path.join(dataset_path, seq_name)]
-        return sequence_paths
+    def _extract_sequence_paths(self, dataset_path, training=True):
+        """ Extracts paths to sequences"""
+        return glob.glob(os.path.join(dataset_path, "*/*"))
 
     def _activity_from_path(self, path):
         """ Extracts activity name from filepath """
