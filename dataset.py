@@ -36,7 +36,7 @@ class Dataset(Dataset):
 
     def _extract_label_mapping(self, dataset_path):
         """ Extracts a mapping between activity name and softmax index """
-        return {label: action for label, action in enumerate(sorted(list(set(os.listdir()))))}
+        return {action: label for label, action in enumerate(sorted(list(set(os.listdir(dataset_path)))))}
 
     def _extract_sequence_paths(self, dataset_path, training=True):
         """ Extracts paths to sequences"""
@@ -48,7 +48,7 @@ class Dataset(Dataset):
 
     def _frame_number(self, image_path):
         """ Extracts frame number from filepath """
-        return int(image_path.split("/")[-1].split(".jpg")[0])
+        return int((image_path.split("/")[-1].split(".jpg")[0])[4:])
 
     def _pad_to_length(self, sequence):
         """ Pads the sequence to required sequence length """
