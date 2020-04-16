@@ -22,6 +22,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_train_threshold', type=int, default=10)
     parser.add_argument("--checkpoint_interval", type=int, default=5, help="Interval between saving model checkpoints")
     parser.add_argument("--checkpoint_model", type=str, default="", help="Optional path to checkpoint model")
+    parser.add_argument("--test_dataset", type=bool, action="store_true", default=False, help="Only load the dataset")
     opt = parser.parse_args()
     print(opt)
 
@@ -43,6 +44,14 @@ if __name__ == "__main__":
     )
     test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=4)
 
+    if opt.test_dataset:
+        print("Dataset tests:")
+        (X, y) = next(train_dataloader)
+        (X_2, y_2) = next(test_dataloader)
+        print("{}, {}".format(str(X), str(y)))
+        print("{}, {}".format(str(X_2), str(y_2)))
+        sys.exit()
+
     # Classification criterion
     cls_criterion = nn.CrossEntropyLoss().to(device)
 
@@ -59,7 +68,7 @@ if __name__ == "__main__":
     if torch.cuda.device_count() > 1:
         print("Using", torch.cuda.device_count(), "GPUs!")
         model = nn.DataParallel(model)
-        
+
     model = model.to(device)
 
     # Add weights from checkpoint model if specified
