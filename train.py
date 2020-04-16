@@ -45,7 +45,6 @@ if __name__ == "__main__":
     test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=4)
 
     if opt.test_dataset:
-        print("Dataset label indexes: {}".format(str(train_dataset._get_label_indexes())))
         print("Dataset tests:")
         for i in range(5):
             (X, y) = train_dataset[i]
