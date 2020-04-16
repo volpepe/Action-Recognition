@@ -47,8 +47,8 @@ if __name__ == "__main__":
     if opt.test_dataset:
         print("Dataset tests:")
         for i in range(5):
-            (X, y) = train_dataloader[i]
-            (X_2, y_2) = test_dataloader[i]
+            (X, y) = train_dataset[i]
+            (X_2, y_2) = test_dataset[i]
             print("Train batch {}: {}, {}".format(str(i), str(X), str(y)))
             print("Val batch {}: {}, {}".format(str(i), str(X_2), str(y_2)))
         sys.exit()
