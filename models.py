@@ -111,20 +111,7 @@ class ConvLSTM(nn.Module):
 #    Parallel ConvLSTM
 ##############################
 
-class ParallelConvLSTM(nn.DataParallel):
-    def __init__(self, model):
-        super(ParallelConvLSTM, self, model).__init__()
-        self.model = nn.DataParallel(model).cuda()
-        print(type(self.model))
-
-    def forward(self, *input):
-        return self.model(*input)
-
-    def __getattr__(self, name):
-        try:
-            return super().__getattr__(name)
-        except AttributeError:
-            return getattr(self.model.module, name)
+#todo
 
 ##############################
 #     Conv2D Classifier
