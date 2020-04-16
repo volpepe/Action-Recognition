@@ -46,10 +46,11 @@ if __name__ == "__main__":
 
     if opt.test_dataset:
         print("Dataset tests:")
-        (X, y) = next(train_dataloader)
-        (X_2, y_2) = next(test_dataloader)
-        print("{}, {}".format(str(X), str(y)))
-        print("{}, {}".format(str(X_2), str(y_2)))
+        for i in range(5):
+            (X, y) = train_dataloader[i]
+            (X_2, y_2) = test_dataloader[i]
+            print("Train batch {}: {}, {}".format(str(i), str(X), str(y)))
+            print("Val batch {}: {}, {}".format(str(i), str(X_2), str(y_2)))
         sys.exit()
 
     # Classification criterion
