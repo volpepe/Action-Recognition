@@ -118,7 +118,7 @@ if __name__ == "__main__":
         keep_training_value = 0
         epoch_metrics = {"loss": [], "acc": []}
         prev_time = time.time()
-        print(f"--- Epoch {epoch} ---")
+        print("--- Epoch {} ---".format(str(epoch)))
         for batch_i, (X, y) in enumerate(train_dataloader):
 
             if X.size(0) == 1:
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         # Save model checkpoint
         if epoch % opt.checkpoint_interval == 0:
             os.makedirs(os.path.join(opt.saved_model_path, "model_checkpoints"), exist_ok=True)
-            torch.save(model.state_dict(), f"model_checkpoints/{model.__class__.__name__}_{epoch}.pth")
+            torch.save(model.state_dict(), "model_checkpoints/{}_{}.pth".format(model.__class__.__name__, str(epoch)))
 
         if validation_accuracy < best_accuracy:
             keep_training_value += 1
