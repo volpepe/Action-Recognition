@@ -48,7 +48,7 @@ class Dataset(Dataset):
 
     def _frame_number(self, image_path):
         """ Extracts frame number from filepath """
-        return int(image_path.split("/")[-1].split(".jpg")[0])
+        return int((image_path.split("/")[-1].split(".jpg")[0])[4:])
 
     def _pad_to_length(self, sequence):
         """ Pads the sequence to required sequence length """
