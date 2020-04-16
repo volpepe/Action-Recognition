@@ -107,6 +107,13 @@ class ConvLSTM(nn.Module):
             x = x[:, -1]
         return self.output_layers(x)
 
+##############################
+#    Parallel ConvLSTM
+##############################
+
+class ParallelConvLSTM(nn.DataParallel):
+    def __getattr__(self, name):
+        return getattr(self.module, name)
 
 ##############################
 #     Conv2D Classifier
