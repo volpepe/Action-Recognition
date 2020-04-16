@@ -111,7 +111,13 @@ class ConvLSTM(nn.Module):
 #    Parallel ConvLSTM
 ##############################
 
-#todo
+class ParallelConvLSTM(nn.DataParallel):
+    def __getattr__(self, name):
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            return getattr(self.module, name)
+
 
 ##############################
 #     Conv2D Classifier

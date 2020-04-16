@@ -66,9 +66,9 @@ if __name__ == "__main__":
         attention=True,
     )
 
-#    if torch.cuda.device_count() > 1:
-#        print("Using", torch.cuda.device_count(), "GPUs!")
-#        model = ParallelConvLSTM(nn.DataParallel(model))
+    if torch.cuda.device_count() > 1:
+        print("Using", torch.cuda.device_count(), "GPUs!")
+        model = ParallelConvLSTM(model)
 
     model = model.to(device)
 
