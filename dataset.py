@@ -36,8 +36,7 @@ class Dataset(Dataset):
 
     def _extract_label_mapping(self, dataset_path):
         """ Extracts a mapping between activity name and softmax index """
-        return {label: action for label, action in enumerate(sorted(list(set(os.listdir(
-                os.path.join(dataset_path, "val_mult"))))))}
+        return {label: action for label, action in enumerate(sorted(list(set(os.listdir()))))}
 
     def _extract_sequence_paths(self, dataset_path, training=True):
         """ Extracts paths to sequences"""
