@@ -113,7 +113,7 @@ class ConvLSTM(nn.Module):
 
 class ParallelConvLSTM(nn.DataParallel):
     def __init__(self, model):
-        super(ParallelConvLSTM, self).__init__()
+        super(ParallelConvLSTM, self, model).__init__()
         self.model = nn.DataParallel(model).cuda()
         print(type(self.model))
 
