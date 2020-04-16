@@ -25,7 +25,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     print(opt)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # Define training set
     train_dataset = Dataset(
@@ -55,6 +55,11 @@ if __name__ == "__main__":
         bidirectional=True,
         attention=True,
     )
+
+    if torch.cuda.device_count() > 1:
+        print("Using", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
+        
     model = model.to(device)
 
     # Add weights from checkpoint model if specified
