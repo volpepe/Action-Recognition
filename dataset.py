@@ -50,21 +50,20 @@ class Dataset(Dataset):
         """ Extracts frame number from filepath """
         return int((image_path.split("/")[-1].split(".jpg")[0])[4:])
 
-    def _pad_to_length(self, sequence):
-        """ Pads the sequence to required sequence length """
-        left_pad = sequence[0]
-        if self.sequence_length is not None:
-            while len(sequence) < self.sequence_length:
-                sequence.insert(0, left_pad)
-        return sequence
+#    def _pad_to_length(self, sequence):
+#        """ Pads the sequence to required sequence length """
+#        left_pad = sequence[0]
+#        if self.sequence_length is not None:
+#            while len(sequence) < self.sequence_length:
+#                sequence.insert(0, left_pad)
+#        return sequence
 
     def __getitem__(self, index):
         sequence_path = self.sequences[index % len(self)]
         # Sort frame sequence based on frame number
         image_paths = sorted(glob.glob("{}/*.jpg".format(sequence_path)), key=lambda path: self._frame_number(path))
-        print(image_paths)
         # Pad frames sequences shorter than `self.sequence_length` to length
-        image_paths = self._pad_to_length(image_paths)
+        #image_paths = self._pad_to_length(image_paths)
         if self.training:
             # Randomly choose sample interval and start frame
             sample_interval = np.random.randint(1, len(image_paths) // self.sequence_length + 1)
