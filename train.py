@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     if opt.test_dataset:
         print("Dataset tests:")
-        for i in range(5):
+        for i in range(20):
             (X, y) = train_dataset[i]
             (X_2, y_2) = test_dataset[i]
             print("Train batch {}: {}, {}".format(str(i), str(X), str(y)))
