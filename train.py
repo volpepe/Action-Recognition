@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=64, help="Size of each training batch")
     parser.add_argument("--sequence_length", type=int, default=1, help="Number of frames in each sequence")
     parser.add_argument("--latent_dim", type=int, default=512, help="Dimensionality of the latent representation")
-    parser.add_argument('--num_train_threshold', type=int, default=10)
+    parser.add_argument('--num_train_threshold', type=int, default=8)
     parser.add_argument("--checkpoint_interval", type=int, default=5, help="Interval between saving model checkpoints")
     parser.add_argument("--checkpoint_model", type=str, default="", help="Optional path to checkpoint model")
     parser.add_argument("--test_dataset", action="store_true", default=False, help="Only load the dataset")
@@ -113,6 +113,8 @@ if __name__ == "__main__":
         print("")
         return acc
 
+    starting_time = time.time()
+
     #training procedure
     for epoch in range(opt.num_epochs):
         best_accuracy = 0
@@ -189,4 +191,7 @@ if __name__ == "__main__":
                 break
         else:
             keep_training_value = 0
+            best_accuracy = validation_accuracy
             print("Accuracy is better than last epoch.")
+
+    print("Training ended in {}".format(str(time.time() - starting_time)))
