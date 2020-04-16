@@ -58,6 +58,9 @@ class Dataset(Dataset):
                 sequence.insert(0, left_pad)
         return sequence
 
+    def _get_label_indexes(self):
+        return self.label_index
+
     def __getitem__(self, index):
         sequence_path = self.sequences[index % len(self)]
         # Sort frame sequence based on frame number
