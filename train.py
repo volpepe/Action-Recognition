@@ -12,7 +12,8 @@ import datetime
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", type=str, default='/home/datasets/KineticsImgTest/dataset', help="Path to dataset")
+    parser.add_argument("--dataset_train_path", type=str, default='/home/datasets/KineticsImgTest/dataset/train_mult', help="Path to train dataset")
+    parser.add_argument("--dataset_val_path", type=str, default='/home/datasets/KineticsImgTest/dataset/val_mult', help="Path to validation dataset")
     parser.add_argument('--saved_model_path', type=str, default='/home/datasets/KineticsImgTest/results')
     parser.add_argument("--num_epochs", type=int, default=50, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=64, help="Size of each training batch")
@@ -28,7 +29,7 @@ if __name__ == "__main__":
 
     # Define training set
     train_dataset = Dataset(
-        dataset_path=opt.dataset_path,
+        dataset_path=opt.dataset_train_path,
         sequence_length=opt.sequence_length,
         training=True,
     )
@@ -36,7 +37,7 @@ if __name__ == "__main__":
 
     # Define test set
     test_dataset = Dataset(
-        dataset_path=opt.dataset_path,
+        dataset_path=opt.dataset_val_path,
         sequence_length=opt.sequence_length,
         training=False,
     )
