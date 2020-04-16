@@ -112,6 +112,8 @@ if __name__ == "__main__":
         print("")
         return acc
 
+    start_time = time.time()
+
     #training procedure
     for epoch in range(opt.num_epochs):
         best_accuracy = 0
@@ -188,4 +190,7 @@ if __name__ == "__main__":
                 break
         else:
             keep_training_value = 0
+            best_accuracy = validation_accuracy
             print("Accuracy is better than last epoch.")
+
+print("Finished training in {}".format(str(time.time() - start_time)))
