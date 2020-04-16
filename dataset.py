@@ -62,6 +62,7 @@ class Dataset(Dataset):
         sequence_path = self.sequences[index % len(self)]
         # Sort frame sequence based on frame number
         image_paths = sorted(glob.glob("{}/*.jpg".format(sequence_path)), key=lambda path: self._frame_number(path))
+        print(image_paths)
         # Pad frames sequences shorter than `self.sequence_length` to length
         image_paths = self._pad_to_length(image_paths)
         if self.training:
