@@ -181,7 +181,8 @@ if __name__ == "__main__":
         # Save model checkpoint
         if epoch % opt.checkpoint_interval == 0:
             os.makedirs(os.path.join(opt.saved_model_path, "model_checkpoints"), exist_ok=True)
-            torch.save(model.state_dict(), "model_checkpoints/{}_{}.pth".format(model.__class__.__name__, str(epoch)))
+            torch.save(model.state_dict(), 
+                os.path.join(opt.saved_model_path, "model_checkpoints/{}_{}.pth".format(model.__class__.__name__, str(epoch))))
 
         if validation_accuracy < best_accuracy:
             keep_training_value += 1
